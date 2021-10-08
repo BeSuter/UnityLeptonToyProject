@@ -108,9 +108,9 @@ public class TCP_Client : MonoBehaviour
         {
             return;
         }
-        // This might be completly useles...
-        byte[] bytes = Encoding.Default.GetBytes(line);
-        line = Encoding.UTF8.GetString(bytes);
+        // This might be completly useless...
+        // byte[] bytes = Encoding.Default.GetBytes(line);
+        // line = Encoding.UTF8.GetString(bytes);
         Debug.Log(line);
         socketWriter.Write(line);
         socketWriter.Flush();
@@ -156,6 +156,16 @@ public class TCP_Client : MonoBehaviour
 
             data = new char[total];
             int n = socketReader.Read(data, 0, total);
+            if (n < total) 
+            {
+                Debug.Log("Number of characters read did not match total characters expected. Looking for more...");
+                while (n != total) 
+                {
+                    char additionalChar = (char)socketReader.Read();
+                    data.SetValue(additionalChar, n - 1);
+                    n++;
+                }
+            }
             Debug.Log($"{n} characters read");
             string jsonString = new string(data);
             Debug.Log("Data is " + jsonString);
